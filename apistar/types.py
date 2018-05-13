@@ -92,7 +92,7 @@ class Type(Mapping, metaclass=TypeMetaclass):
         args = ['%s=%s' % (key, repr(value)) for key, value in self.items()]
         arg_string = ', '.join(args)
         return '<%s(%s)>' % (self.__class__.__name__, arg_string)
-
+    
     def __setattr__(self, key, value):
         if key not in self._dict:
             raise AttributeError('Invalid attribute "%s"' % key)
@@ -106,7 +106,7 @@ class Type(Mapping, metaclass=TypeMetaclass):
         self._dict[key] = value
 
     def __getattr__(self, key):
-        return self._dict[key]
+        return self._dict.get(key)
 
     def __getitem__(self, key):
         value = self._dict[key]
@@ -117,7 +117,10 @@ class Type(Mapping, metaclass=TypeMetaclass):
             formatter = validators.FORMATS[validator.format]
             return formatter.to_string(value)
         return value
-
+    
+    def __hasattr__(self, key):
+        return key in self._dict
+    
     def __len__(self):
         return len(self._dict)
 
